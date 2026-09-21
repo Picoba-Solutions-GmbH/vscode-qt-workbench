@@ -1,0 +1,3 @@
+module Legacy
+Old 1.0 Old.qml
+singleton Other 1.0 Other.qml

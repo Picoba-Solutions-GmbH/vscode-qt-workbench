@@ -1,0 +1,9 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+  "dependencies": [
+    "nlohmann-json",
+    "snap7",
+    "vincentlaucsb-csv-parser",
+    { "name": "curl", "platform": "windows" }
+  ]
+}

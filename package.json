@@ -1,0 +1,611 @@
+{
+  "name": "qt-workbench",
+  "displayName": "Qt Workbench",
+  "description": "Make QT development fun in VS Code",
+  "version": "0.18.0",
+  "publisher": "local",
+  "icon": "logo.png",
+  "license": "MIT",
+  "keywords": [
+    "qt",
+    "qml",
+    "cmake",
+    "qmake",
+    "vcpkg",
+    "hot reload",
+    "refactor"
+  ],
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "main": "./src/extension.js",
+  "activationEvents": [
+    "onStartupFinished",
+    "onDebug"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "qtWorkbench.showLog",
+        "title": "Qt Workbench: Show Log"
+      },
+      {
+        "command": "qtWorkbench.renameSymbol",
+        "title": "Qt Workbench: Rename Symbol"
+      },
+      {
+        "command": "qtWorkbench.newProject",
+        "title": "New Qt Project...",
+        "category": "Qt Workbench"
+      },
+      {
+        "command": "qtWorkbench.newQmlFile",
+        "title": "New QML File...",
+        "category": "Qt Workbench"
+      },
+      {
+        "command": "qtWorkbench.newCppSource",
+        "title": "New C++ Source File...",
+        "category": "Qt Workbench"
+      },
+      {
+        "command": "qtWorkbench.newCppHeader",
+        "title": "New C++ Header File...",
+        "category": "Qt Workbench"
+      },
+      {
+        "command": "qtWorkbench.setUpVcpkg",
+        "title": "Set Up vcpkg with CMake Presets...",
+        "category": "Qt Workbench"
+      },
+      {
+        "command": "qtWorkbench.installVcpkg",
+        "title": "Install vcpkg...",
+        "category": "Qt Workbench"
+      },
+      {
+        "command": "qtWorkbench.installCMake",
+        "title": "Install CMake",
+        "category": "Qt Workbench"
+      },
+      {
+        "command": "qtWorkbench.addVcpkgPackage",
+        "title": "Add vcpkg Package...",
+        "category": "Qt Workbench"
+      },
+      {
+        "command": "qtWorkbench.removeVcpkgPackage",
+        "title": "Remove vcpkg Package...",
+        "category": "Qt Workbench"
+      },
+      {
+        "command": "qtWorkbench.setUpHotReload",
+        "title": "Set Up QML Hot Reload Debugging...",
+        "category": "Qt Workbench"
+      },
+      {
+        "command": "qtWorkbench.reloadQml",
+        "title": "Reload QML in Debugged Application",
+        "category": "Qt Workbench"
+      },
+      {
+        "command": "qtWorkbench.qmlHotReloadPort",
+        "title": "Free Port for QML Hot Reload",
+        "category": "Qt Workbench"
+      },
+      {
+        "command": "qtWorkbench.projectExplorer.refresh",
+        "title": "Refresh Qt Project Explorer",
+        "category": "Qt Workbench",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "qtWorkbench.projectExplorer.openToSide",
+        "title": "Open to the Side"
+      },
+      {
+        "command": "qtWorkbench.projectExplorer.revealInExplorer",
+        "title": "Reveal in Explorer View"
+      },
+      {
+        "command": "qtWorkbench.projectExplorer.copyPath",
+        "title": "Copy Path"
+      },
+      {
+        "command": "qtWorkbench.projectExplorer.copyRelativePath",
+        "title": "Copy Relative Path"
+      },
+      {
+        "command": "qtWorkbench.projectExplorer.newQmlFile",
+        "title": "New QML File..."
+      },
+      {
+        "command": "qtWorkbench.projectExplorer.newCppSource",
+        "title": "New C++ Source File..."
+      },
+      {
+        "command": "qtWorkbench.projectExplorer.newCppHeader",
+        "title": "New C++ Header File..."
+      },
+      {
+        "command": "qtWorkbench.projectExplorer.setUpVcpkg",
+        "title": "Set Up vcpkg with CMake Presets..."
+      },
+      {
+        "command": "qtWorkbench.projectExplorer.setUpHotReload",
+        "title": "Set Up QML Hot Reload Debugging..."
+      },
+      {
+        "command": "qtWorkbench.projectExplorer.addVcpkgPackage",
+        "title": "Add vcpkg Package...",
+        "icon": "$(add)"
+      },
+      {
+        "command": "qtWorkbench.projectExplorer.removeVcpkgPackage",
+        "title": "Remove vcpkg Package...",
+        "icon": "$(remove)"
+      },
+      {
+        "command": "qtWorkbench.projectExplorer.rename",
+        "title": "Rename..."
+      },
+      {
+        "command": "qtWorkbench.projectExplorer.delete",
+        "title": "Delete"
+      }
+    ],
+    "configuration": {
+      "title": "Qt Workbench",
+      "properties": {
+        "qtWorkbench.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Update references when files are moved, renamed or deleted in the explorer."
+        },
+        "qtWorkbench.updateCMake": {
+          "type": "boolean",
+          "default": true,
+          "description": "Keep the file lists in CMakeLists.txt, *.cmake, *.pro and *.pri (QML_FILES, SOURCES, RESOURCES, HEADERS, ...) up to date: update paths when files move, remove the entries of deleted files, and add the files created with New QML/C++ File."
+        },
+        "qtWorkbench.updateIncludes": {
+          "type": "boolean",
+          "default": true,
+          "description": "Update #include \"...\" paths in C/C++ sources, both in the moved file and in files that include it. When a file is deleted, report the includes of it that are left."
+        },
+        "qtWorkbench.updateQml": {
+          "type": "boolean",
+          "default": true,
+          "description": "Update QML directory imports and file paths in string literals (Loader source, Image source, Qt.createComponent, ...). When a file is deleted, report the QML types and paths still referring to it."
+        },
+        "qtWorkbench.renameQmlTypes": {
+          "type": "boolean",
+          "default": true,
+          "description": "When a .qml file is renamed, rename its type everywhere it is referenced: BasicsView {} in other QML files, qmldir type names, and loadFromModule(\"Test\", \"BasicsView\") / Qt.createComponent type-name strings."
+        },
+        "qtWorkbench.renameCppTypes": {
+          "type": "boolean",
+          "default": true,
+          "description": "When Rename Symbol (F2) renames a C++ class, struct or namespace that is registered with QML_ELEMENT, rename its QML type everywhere it is referenced too: BasicsViewModel {} in the QML files of its module or importing it, and loadFromModule(\"Test\", \"BasicsViewModel\") / Qt.createComponent type-name strings. The C++ references are renamed by your C++ language server as usual."
+        },
+        "qtWorkbench.updateQrc": {
+          "type": "boolean",
+          "default": true,
+          "description": "Keep <file> entries in .qrc resource files up to date -- update them when files move, remove those of deleted files, add a .qml file created with New QML File -- and update resource references in .ui files."
+        },
+        "qtWorkbench.updateQmldir": {
+          "type": "boolean",
+          "default": true,
+          "description": "Keep type entries in hand-written qmldir files up to date: update them when files move, remove those of deleted files, and add a .qml file created with New QML File."
+        },
+        "qtWorkbench.updateResourceUrls": {
+          "type": "boolean",
+          "default": true,
+          "description": "Update qrc:/ and :/ URLs that point into a qt_add_qml_module URI when the file behind them moves."
+        },
+        "qtWorkbench.qrcPreserveAlias": {
+          "type": "boolean",
+          "default": true,
+          "description": "When a .qrc <file> path changes, add an alias so the resulting :/ resource URL stays the same."
+        },
+        "qtWorkbench.confirm": {
+          "type": "string",
+          "enum": [
+            "never",
+            "always"
+          ],
+          "default": "never",
+          "description": "Ask before applying the reference updates, or before adding a new file to the build files. 'never' applies them as part of the move (a single undo reverts both), the delete or the file creation."
+        },
+        "qtWorkbench.showSummary": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show a notification summarising which files were updated."
+        },
+        "qtWorkbench.newFileMenu": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show New QML File..., New C++ Source File... and New C++ Header File... in the explorer context menu. They stay available in the command palette."
+        },
+        "qtWorkbench.headerGuard": {
+          "type": "string",
+          "enum": [
+            "ifndef",
+            "pragmaOnce"
+          ],
+          "enumDescriptions": [
+            "#ifndef FOO_H / #define FOO_H / #endif // FOO_H, as Qt Creator writes it",
+            "#pragma once"
+          ],
+          "default": "ifndef",
+          "description": "How a header created with New C++ Header File guards against double inclusion."
+        },
+        "qtWorkbench.projectExplorer": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show the Qt Project Explorer in the explorer side bar, in a workspace with a CMakeLists.txt or a .pro file: each CMake or qmake project with its targets and their files in source groups, as Qt Creator's project tree shows them."
+        },
+        "qtWorkbench.projectExplorerAutoReveal": {
+          "type": "boolean",
+          "default": true,
+          "description": "Select the active editor's file in the Qt Project Explorer."
+        },
+        "qtWorkbench.qmlHotReload": {
+          "type": "boolean",
+          "default": true,
+          "description": "When a debug session starts a program with -qmljsdebugger=...,services:QmlPreview in its args, connect to it and reload its QML whenever you save a QML file (or any other file compiled into its resources). Add block to the -qmljsdebugger argument so the program waits for the connection."
+        },
+        "qtWorkbench.gdbInterrupt": {
+          "type": "boolean",
+          "default": true,
+          "description": "On Windows, make breakpoints you add or remove while the program runs, and Pause, work in C/C++ (cppdbg) debug sessions whose gdb is older than 15, such as the gdb 11.2 of Qt's MinGW. That gdb can't stop a running program by itself, so Qt Workbench stops it, as Qt Creator does. It also adds 'handle SIGINT nostop noprint nopass' to the session's setupCommands: gdb then ignores Ctrl+C, also one pressed in the program's console."
+        },
+        "qtWorkbench.useGitignore": {
+          "type": "boolean",
+          "default": true,
+          "description": "Leave alone every file git ignores (nested .gitignore files, .git/info/exclude and your global excludes included). Asks git directly; if the folder is not a git repository or git is not installed, the log says so. Build directories are skipped regardless of this setting."
+        },
+        "qtWorkbench.exclude": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "**/.git/**",
+            "**/node_modules/**",
+            "**/.qtcreator/**",
+            "**/.idea/**",
+            "**/out/**",
+            "**/dist/**"
+          ],
+          "description": "Additional glob patterns that are never scanned or rewritten. Build directories (build, builds, build-*, cmake-build-*, and any folder holding a CMakeCache.txt or .qmake.stash) and files ignored by git are always skipped and need not be listed here."
+        }
+      }
+    },
+    "views": {
+      "explorer": [
+        {
+          "id": "qtWorkbench.projectExplorer",
+          "name": "Qt Project Explorer",
+          "when": "config.qtWorkbench.projectExplorer && qtWorkbench.projectExplorer.hasProjectFiles"
+        }
+      ]
+    },
+    "debuggers": [
+      {
+        "type": "cppdbg",
+        "configurationSnippets": [
+          {
+            "label": "Qt Workbench: Debug with QML Hot Reload (gdb, lldb)",
+            "description": "Start CMake Tools' launch target with QML hot reload, using the Qt C++ extension's commands. Its Debug build needs QT_QML_DEBUG: Qt Workbench: Set Up QML Hot Reload Debugging adds it.",
+            "body": {
+              "name": "Debug Qt Application with QML hot reload",
+              "type": "cppdbg",
+              "request": "launch",
+              "program": "^\"\\${command:cmake.launchTargetPath}\"",
+              "args": [
+                "^\"-qmljsdebugger=host:127.0.0.1,port:\\${command:qtWorkbench.qmlHotReloadPort},block,services:QmlPreview\""
+              ],
+              "stopAtEntry": false,
+              "cwd": "^\"\\${workspaceFolder}\"",
+              "visualizerFile": "^\"\\${command:qt-cpp.natvis}\"",
+              "showDisplayString": true,
+              "windows": {
+                "sourceFileMap": {
+                  "Q:/qt5_workdir/w/s": "^\"\\${command:qt-cpp.sourceDirectory}\"",
+                  "C:/work/build/qt5_workdir/w/s": "^\"\\${command:qt-cpp.sourceDirectory}\"",
+                  "c:/users/qt/work/qt": "^\"\\${command:qt-cpp.sourceDirectory}\"",
+                  "c:/Users/qt/work/install": "^\"\\${command:qt-cpp.sourceDirectory}\"",
+                  "/Users/qt/work/qt": "^\"\\${command:qt-cpp.sourceDirectory}\""
+                },
+                "environment": [
+                  {
+                    "name": "PATH",
+                    "value": "^\"\\${command:qt-cpp.qtDir};\\${env:PATH}\""
+                  },
+                  {
+                    "name": "QT_QPA_PLATFORM_PLUGIN_PATH",
+                    "value": "^\"\\${command:qt-cpp.QT_QPA_PLATFORM_PLUGIN_PATH}\""
+                  },
+                  {
+                    "name": "QML_IMPORT_PATH",
+                    "value": "^\"\\${command:qt-cpp.QML_IMPORT_PATH}\""
+                  }
+                ],
+                "MIMode": "gdb",
+                "miDebuggerPath": "^\"\\${command:qt-cpp.minGWgdb}\""
+              },
+              "linux": {
+                "sourceFileMap": {
+                  "/home/qt/work/qt": "^\"\\${command:qt-cpp.sourceDirectory}\""
+                },
+                "MIMode": "gdb"
+              },
+              "osx": {
+                "sourceFileMap": {
+                  "/Users/qt/work/qt": "^\"\\${command:qt-cpp.sourceDirectory}\""
+                },
+                "MIMode": "lldb"
+              }
+            }
+          },
+          {
+            "label": "Qt Workbench: Debug with QML Hot Reload (Visual Studio Debugger)",
+            "description": "Start CMake Tools' launch target with QML hot reload, using the Qt C++ extension's commands. Its Debug build needs QT_QML_DEBUG: Qt Workbench: Set Up QML Hot Reload Debugging adds it.",
+            "body": {
+              "name": "Debug Qt Application with QML hot reload",
+              "type": "cppvsdbg",
+              "request": "launch",
+              "program": "^\"\\${command:cmake.launchTargetPath}\"",
+              "args": [
+                "^\"-qmljsdebugger=host:127.0.0.1,port:\\${command:qtWorkbench.qmlHotReloadPort},block,services:QmlPreview\""
+              ],
+              "stopAtEntry": false,
+              "cwd": "^\"\\${workspaceFolder}\"",
+              "visualizerFile": "^\"\\${command:qt-cpp.natvis}\"",
+              "windows": {
+                "sourceFileMap": {
+                  "Q:/qt5_workdir/w/s": "^\"\\${command:qt-cpp.sourceDirectory}\"",
+                  "C:/work/build/qt5_workdir/w/s": "^\"\\${command:qt-cpp.sourceDirectory}\"",
+                  "c:/users/qt/work/qt": "^\"\\${command:qt-cpp.sourceDirectory}\"",
+                  "c:/Users/qt/work/install": "^\"\\${command:qt-cpp.sourceDirectory}\"",
+                  "/Users/qt/work/qt": "^\"\\${command:qt-cpp.sourceDirectory}\""
+                },
+                "environment": [
+                  {
+                    "name": "PATH",
+                    "value": "^\"\\${command:qt-cpp.qtDir};\\${env:PATH}\""
+                  },
+                  {
+                    "name": "QT_QPA_PLATFORM_PLUGIN_PATH",
+                    "value": "^\"\\${command:qt-cpp.QT_QPA_PLATFORM_PLUGIN_PATH}\""
+                  },
+                  {
+                    "name": "QML_IMPORT_PATH",
+                    "value": "^\"\\${command:qt-cpp.QML_IMPORT_PATH}\""
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "viewsWelcome": [
+      {
+        "view": "explorer",
+        "contents": "Start a Qt Quick application from a template, with or without vcpkg.\n[New Qt Project](command:qtWorkbench.newProject)",
+        "when": "workbenchState == empty"
+      },
+      {
+        "view": "debug",
+        "contents": "Debug a Qt application with QML hot reload: a debug configuration in launch.json, and QT_QML_DEBUG for the Debug build in CMakeLists.txt.\n[Set Up QML Hot Reload Debugging](command:qtWorkbench.setUpHotReload)",
+        "when": "qtWorkbench.projectExplorer.hasProjectFiles"
+      },
+      {
+        "view": "qtWorkbench.projectExplorer",
+        "contents": "No CMake or qmake project found: no CMakeLists.txt that calls project() or sits at the root of a workspace folder, and no .pro file.\n[Refresh](command:qtWorkbench.projectExplorer.refresh)"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "qtWorkbench.newQmlFile",
+          "group": "navigation@7",
+          "when": "explorerResourceIsFolder && !explorerResourceReadonly && config.qtWorkbench.newFileMenu"
+        },
+        {
+          "command": "qtWorkbench.newCppSource",
+          "group": "navigation@8",
+          "when": "explorerResourceIsFolder && !explorerResourceReadonly && config.qtWorkbench.newFileMenu"
+        },
+        {
+          "command": "qtWorkbench.newCppHeader",
+          "group": "navigation@9",
+          "when": "explorerResourceIsFolder && !explorerResourceReadonly && config.qtWorkbench.newFileMenu"
+        },
+        {
+          "command": "qtWorkbench.newQmlFile",
+          "group": "1_qtNewFile@1",
+          "when": "!explorerResourceIsFolder && !explorerResourceParentReadonly && config.qtWorkbench.newFileMenu"
+        },
+        {
+          "command": "qtWorkbench.newCppSource",
+          "group": "1_qtNewFile@2",
+          "when": "!explorerResourceIsFolder && !explorerResourceParentReadonly && config.qtWorkbench.newFileMenu"
+        },
+        {
+          "command": "qtWorkbench.newCppHeader",
+          "group": "1_qtNewFile@3",
+          "when": "!explorerResourceIsFolder && !explorerResourceParentReadonly && config.qtWorkbench.newFileMenu"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "qtWorkbench.renameSymbol",
+          "when": "false"
+        },
+        {
+          "command": "qtWorkbench.qmlHotReloadPort",
+          "when": "false"
+        },
+        {
+          "command": "qtWorkbench.projectExplorer.openToSide",
+          "when": "false"
+        },
+        {
+          "command": "qtWorkbench.projectExplorer.revealInExplorer",
+          "when": "false"
+        },
+        {
+          "command": "qtWorkbench.projectExplorer.copyPath",
+          "when": "false"
+        },
+        {
+          "command": "qtWorkbench.projectExplorer.copyRelativePath",
+          "when": "false"
+        },
+        {
+          "command": "qtWorkbench.projectExplorer.newQmlFile",
+          "when": "false"
+        },
+        {
+          "command": "qtWorkbench.projectExplorer.newCppSource",
+          "when": "false"
+        },
+        {
+          "command": "qtWorkbench.projectExplorer.newCppHeader",
+          "when": "false"
+        },
+        {
+          "command": "qtWorkbench.projectExplorer.setUpVcpkg",
+          "when": "false"
+        },
+        {
+          "command": "qtWorkbench.projectExplorer.setUpHotReload",
+          "when": "false"
+        },
+        {
+          "command": "qtWorkbench.projectExplorer.addVcpkgPackage",
+          "when": "false"
+        },
+        {
+          "command": "qtWorkbench.projectExplorer.removeVcpkgPackage",
+          "when": "false"
+        },
+        {
+          "command": "qtWorkbench.projectExplorer.rename",
+          "when": "false"
+        },
+        {
+          "command": "qtWorkbench.projectExplorer.delete",
+          "when": "false"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "qtWorkbench.projectExplorer.refresh",
+          "when": "view == qtWorkbench.projectExplorer",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "qtWorkbench.projectExplorer.openToSide",
+          "when": "view == qtWorkbench.projectExplorer && viewItem =~ /^qt(File)$/",
+          "group": "navigation@1"
+        },
+        {
+          "command": "qtWorkbench.projectExplorer.revealInExplorer",
+          "when": "view == qtWorkbench.projectExplorer && viewItem =~ /^qt(File|Folder|Project|CMakeProject)$/",
+          "group": "navigation@2"
+        },
+        {
+          "command": "qtWorkbench.projectExplorer.newQmlFile",
+          "when": "view == qtWorkbench.projectExplorer && viewItem =~ /^qt(File|Folder|Project|CMakeProject|Target|Group|MissingFile)$/",
+          "group": "1_qtNewFile@1"
+        },
+        {
+          "command": "qtWorkbench.projectExplorer.newCppSource",
+          "when": "view == qtWorkbench.projectExplorer && viewItem =~ /^qt(File|Folder|Project|CMakeProject|Target|Group|MissingFile)$/",
+          "group": "1_qtNewFile@2"
+        },
+        {
+          "command": "qtWorkbench.projectExplorer.newCppHeader",
+          "when": "view == qtWorkbench.projectExplorer && viewItem =~ /^qt(File|Folder|Project|CMakeProject|Target|Group|MissingFile)$/",
+          "group": "1_qtNewFile@3"
+        },
+        {
+          "command": "qtWorkbench.projectExplorer.copyPath",
+          "when": "view == qtWorkbench.projectExplorer && viewItem =~ /^qt(File|Folder|Project|CMakeProject)$/",
+          "group": "6_copypath@1"
+        },
+        {
+          "command": "qtWorkbench.projectExplorer.copyRelativePath",
+          "when": "view == qtWorkbench.projectExplorer && viewItem =~ /^qt(File|Folder|Project|CMakeProject)$/",
+          "group": "6_copypath@2"
+        },
+        {
+          "command": "qtWorkbench.projectExplorer.setUpVcpkg",
+          "when": "view == qtWorkbench.projectExplorer && viewItem == qtCMakeProject",
+          "group": "8_cmake@1"
+        },
+        {
+          "command": "qtWorkbench.projectExplorer.setUpHotReload",
+          "when": "view == qtWorkbench.projectExplorer && viewItem == qtCMakeProject",
+          "group": "8_cmake@2"
+        },
+        {
+          "command": "qtWorkbench.projectExplorer.addVcpkgPackage",
+          "when": "view == qtWorkbench.projectExplorer && viewItem =~ /^qt(CMakeProject|Target|VcpkgPackages|VcpkgPackage|VcpkgDependency)$/",
+          "group": "8_cmake@3"
+        },
+        {
+          "command": "qtWorkbench.projectExplorer.addVcpkgPackage",
+          "when": "view == qtWorkbench.projectExplorer && viewItem == qtVcpkgPackages",
+          "group": "inline"
+        },
+        {
+          "command": "qtWorkbench.projectExplorer.removeVcpkgPackage",
+          "when": "view == qtWorkbench.projectExplorer && viewItem =~ /^qt(VcpkgPackages|VcpkgPackage)$/",
+          "group": "8_cmake@4"
+        },
+        {
+          "command": "qtWorkbench.projectExplorer.removeVcpkgPackage",
+          "when": "view == qtWorkbench.projectExplorer && viewItem == qtVcpkgPackage",
+          "group": "inline"
+        },
+        {
+          "command": "qtWorkbench.projectExplorer.rename",
+          "when": "view == qtWorkbench.projectExplorer && viewItem =~ /^qt(File|Folder)$/",
+          "group": "7_modification@1"
+        },
+        {
+          "command": "qtWorkbench.projectExplorer.delete",
+          "when": "view == qtWorkbench.projectExplorer && viewItem =~ /^qt(File|Folder)$/",
+          "group": "7_modification@2"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "qtWorkbench.renameSymbol",
+        "key": "f2",
+        "when": "editorTextFocus && !editorReadonly && resourceScheme == file && editorLangId =~ /^(c|cpp|cuda-cpp|objective-c|objective-cpp)$/ && config.qtWorkbench.enabled && config.qtWorkbench.renameCppTypes"
+      },
+      {
+        "command": "qtWorkbench.projectExplorer.rename",
+        "key": "f2",
+        "when": "focusedView == qtWorkbench.projectExplorer && !inputFocus"
+      },
+      {
+        "command": "qtWorkbench.projectExplorer.delete",
+        "key": "delete",
+        "mac": "cmd+backspace",
+        "when": "focusedView == qtWorkbench.projectExplorer && !inputFocus"
+      }
+    ]
+  }
+}

@@ -1,0 +1,10 @@
+.git/**
+.gitattributes
+.gitignore
+.claude/**
+AGENTS.md
+CLAUDE.md
+docs/**
+test/**
+package.ps1
+*.vsix

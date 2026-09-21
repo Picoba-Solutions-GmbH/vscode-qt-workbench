@@ -1,0 +1,4 @@
+# Keep every text file LF, whatever core.autocrlf says. The tests compare fixture files
+# byte for byte and match lines like `^import "views"$`, and bash scripts break on CRLF.
+* text=auto eol=lf
+*.vsix binary
